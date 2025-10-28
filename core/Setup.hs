@@ -170,16 +170,17 @@ copyTemporalBridge lbi fp = do
 installTemporalBridge :: Args -> CopyFlags -> PackageDescription -> LocalBuildInfo -> IO ()
 installTemporalBridge _ flags pkg_descr lbi = do
   let
-    libPref =
-      libdir
-        . absoluteInstallDirs pkg_descr lbi
+    installDirs =
+        absoluteInstallDirs pkg_descr lbi
         . fromFlag
         . copyDest
         $ flags
+    libPref = libdir installDirs
+    dynlibPref = dynlibdir installDirs
     config = configFlags lbi
 
   unless (cabalFlag externalLibFlag $ configFlags lbi) $ do
-    copyLib config libPref True
+    copyLib config dynlibPref True
     copyLib config libPref False
 
 
